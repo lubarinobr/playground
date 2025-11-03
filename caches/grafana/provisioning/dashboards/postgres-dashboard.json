@@ -1,0 +1,286 @@
+{
+  "uid": "postgres-memory-disk",
+  "title": "PostgreSQL - Memória e Disco",
+  "tags": ["postgres", "database"],
+  "timezone": "browser",
+  "schemaVersion": 16,
+  "version": 0,
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Tamanho dos Bancos de Dados",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "pg_database_size_bytes{datname=\"playground\"}",
+          "refId": "A",
+          "legendFormat": "Tamanho do Banco"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 2,
+      "title": "Uso Atual de Disco",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "pg_database_size_bytes{datname=\"playground\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Conexões Ativas",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "pg_stat_database_numbackends{datname=\"playground\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Blocos em Cache vs Disco",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "pg_stat_database_blks_hit{datname=\"playground\"}",
+          "refId": "A",
+          "legendFormat": "Cache Hit"
+        },
+        {
+          "expr": "pg_stat_database_blks_read{datname=\"playground\"}",
+          "refId": "B",
+          "legendFormat": "Disk Read"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        }
+      },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 16 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 5,
+      "title": "Taxa de Cache Hit",
+      "type": "gauge",
+      "targets": [
+        {
+          "expr": "rate(pg_stat_database_blks_hit{datname=\"playground\"}[5m]) / (rate(pg_stat_database_blks_hit{datname=\"playground\"}[5m]) + rate(pg_stat_database_blks_read{datname=\"playground\"}[5m])) * 100",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "red" },
+              { "value": 80, "color": "yellow" },
+              { "value": 95, "color": "green" }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 6,
+      "title": "Transações por Segundo",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "rate(pg_stat_database_xact_commit{datname=\"playground\"}[5m])",
+          "refId": "A",
+          "legendFormat": "Commits"
+        },
+        {
+          "expr": "rate(pg_stat_database_xact_rollback{datname=\"playground\"}[5m])",
+          "refId": "B",
+          "legendFormat": "Rollbacks"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "decimals": 2
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 7,
+      "title": "Tabelas e Índices (Tamanho)",
+      "type": "table",
+      "targets": [
+        {
+          "expr": "pg_stat_user_tables_n_tup_ins{datname=\"playground\"}",
+          "refId": "A",
+          "format": "table",
+          "instant": true
+        }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 8,
+      "title": "Memória Total do Container",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "container_spec_memory_limit_bytes{name=\"playground-postgres\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "blue" }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 32 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 9,
+      "title": "Memória Utilizada do Container",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "container_memory_usage_bytes{name=\"playground-postgres\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 419430400, "color": "yellow" },
+              { "value": 471859200, "color": "red" }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 32 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 10,
+      "title": "Uso de Memória ao Longo do Tempo",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "container_memory_usage_bytes{name=\"playground-postgres\"}",
+          "refId": "A",
+          "legendFormat": "Memória Utilizada"
+        },
+        {
+          "expr": "container_spec_memory_limit_bytes{name=\"playground-postgres\"}",
+          "refId": "B",
+          "legendFormat": "Limite Total"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 40 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    }
+  ],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "weekStart": ""
+}

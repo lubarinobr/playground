@@ -1,0 +1,40 @@
+### Variáveis
+@baseUrl = http://localhost:8080
+
+###
+### Criar Usuário (necessário antes de criar documento)
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+
+{
+  "nome": "Matheus Lubarino",
+  "email": "matheus@example.com"
+}
+
+###
+### Criar Documento
+POST {{baseUrl}}/documentos
+Content-Type: application/json
+
+{
+  "titulo": "Documento de Teste",
+  "conteudo": "Este é o conteúdo do documento de teste para validar o cache Redis.",
+  "usuarioId": 1
+}
+
+###
+### Consultar Todos os Documentos (verifica cache)
+GET {{baseUrl}}/documentos
+
+###
+### Consultar Documento por ID (verifica cache)
+GET {{baseUrl}}/documentos/1
+
+###
+### Consultar Documento por ID - Segunda vez (deve retornar do cache)
+GET {{baseUrl}}/documentos/1
+
+###
+### Consultar Todos os Documentos - Segunda vez (deve retornar do cache)
+GET {{baseUrl}}/documentos
+

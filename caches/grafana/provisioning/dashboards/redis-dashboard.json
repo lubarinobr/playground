@@ -1,0 +1,197 @@
+{
+  "uid": "redis-memory-disk",
+  "title": "Redis - Memória e Disco",
+  "tags": ["redis", "cache"],
+  "timezone": "browser",
+  "schemaVersion": 16,
+  "version": 0,
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Uso de Memória Redis",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "redis_memory_used_bytes",
+          "refId": "A",
+          "legendFormat": "Usado"
+        },
+        {
+          "expr": "redis_memory_max_bytes",
+          "refId": "B",
+          "legendFormat": "Máximo"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 80, "color": "yellow" },
+              { "value": 90, "color": "red" }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 2,
+      "title": "Memória Redis ao Longo do Tempo",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "redis_memory_used_bytes",
+          "refId": "A",
+          "legendFormat": "Memória Usada"
+        },
+        {
+          "expr": "redis_memory_max_bytes",
+          "refId": "B",
+          "legendFormat": "Memória Máxima"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Percentual de Uso de Memória",
+      "type": "gauge",
+      "targets": [
+        {
+          "expr": "(redis_memory_used_bytes / redis_memory_max_bytes) * 100",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 70, "color": "yellow" },
+              { "value": 90, "color": "red" }
+            ]
+          },
+          "nullValueMode": "null",
+          "mappings": [
+            {
+              "options": {
+                "from": "",
+                "to": null,
+                "type": "special"
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "Inf": {
+                  "color": "text",
+                  "index": 1,
+                  "text": "Sem limite configurado"
+                }
+              },
+              "type": "special"
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Chaves no Redis",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(redis_db_keys) or sum(redis_keyspace_keys)",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    },
+    {
+      "id": 5,
+      "title": "Informações de Memória Detalhadas",
+      "type": "table",
+      "targets": [
+        {
+          "expr": "redis_memory_used_bytes",
+          "refId": "A",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "expr": "redis_memory_max_bytes",
+          "refId": "B",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "expr": "redis_memory_used_peak_bytes",
+          "refId": "C",
+          "format": "table",
+          "instant": true
+        }
+      ],
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 16 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      }
+    }
+  ],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "weekStart": ""
+}
