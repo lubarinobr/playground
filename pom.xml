@@ -14,6 +14,7 @@
     <module>mcp</module>
     <module>hexagonal</module>
     <module>cqrs</module>
+    <module>spring-specification</module>
   </modules>
 
   <parent>

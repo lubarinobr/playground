@@ -11,7 +11,7 @@ function App() {
         <Navigation />
         <Routes>
           <Route path="/" element={<Documentation />} />
-          <Route path="/user" element={<User />} />
+          <Route path="/internalUser" element={<User />} />
         </Routes>
       </div>
     </Router>

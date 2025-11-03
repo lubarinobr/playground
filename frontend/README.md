@@ -6,7 +6,7 @@ A modern React application built with TypeScript, Vite, and Tailwind CSS featuri
 
 ### Pages
 - **Documentation Page**: Comprehensive documentation with API examples and guides
-- **User Management Page**: Full CRUD operations for user management with external API integration
+- **User Management Page**: Full CRUD operations for internalUser management with external API integration
 
 ### Reusable Components
 - **Button**: Multiple variants (primary, secondary, outline, ghost) and sizes (sm, md, lg)
@@ -93,13 +93,13 @@ import apiService from './services/api';
 // Fetch users
 const response = await apiService.get<User[]>('/users');
 
-// Create a new user
+// Create a new internalUser
 const newUser = await apiService.post<User>('/users', userData);
 
-// Update user
+// Update internalUser
 const updatedUser = await apiService.put<User>(`/users/${id}`, userData);
 
-// Delete user
+// Delete internalUser
 await apiService.delete(`/users/${id}`);
 ```
 
