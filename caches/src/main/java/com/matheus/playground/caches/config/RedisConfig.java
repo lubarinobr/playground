@@ -3,6 +3,9 @@ package com.matheus.playground.caches.config;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -13,9 +16,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.time.Duration;
 
 @Configuration
+@ConditionalOnClass(RedisConnectionFactory.class)
 public class RedisConfig {
 
-    private static final Duration DEFAULT_TTL = Duration.ofMinutes(5);
+    private static final Logger logger = LoggerFactory.getLogger(RedisConfig.class);
+    private static final Duration DEFAULT_TTL = Duration.ofSeconds(30);
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
@@ -36,6 +41,7 @@ public class RedisConfig {
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(serializer);
 
+        template.setEnableDefaultSerializer(false);
         template.afterPropertiesSet();
         return template;
     }

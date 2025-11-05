@@ -20,6 +20,7 @@ public class DocumentoService {
 
     private static final String CACHE_KEY_ALL = "documentos:all";
     private static final String CACHE_KEY_BY_ID = "documentos:id:";
+    private static final String CACHE_KEY_BY_USUARIO = "documentos:usuario:";
     private static final Duration TTL = RedisConfig.getDefaultTtl();
 
     private final DocumentoRepository documentoRepository;
@@ -65,6 +66,22 @@ public class DocumentoService {
         return dto;
     }
 
+    @Transactional(readOnly = true)
+    public List<DocumentoDTO> findByUsuarioId(Long usuarioId) {
+        var cacheKey = CACHE_KEY_BY_USUARIO + usuarioId;
+        var cached = cacheService.getList(cacheKey, DocumentoDTO.class);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+
+        var documentos = documentoRepository.findByUsuarioId(usuarioId).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+
+        cacheService.put(cacheKey, documentos, TTL);
+        return documentos;
+    }
+
     @Transactional
     public DocumentoDTO create(CreateDocumentoDTO dto) {
         var usuario = usuarioRepository.findById(dto.usuarioId())
@@ -73,6 +90,7 @@ public class DocumentoService {
         var saved = documentoRepository.save(documento);
         
         cacheService.delete(CACHE_KEY_ALL);
+        cacheService.delete(CACHE_KEY_BY_USUARIO + dto.usuarioId());
         var dtoResult = toDTO(saved);
         cacheService.put(CACHE_KEY_BY_ID + saved.getId(), dtoResult, TTL);
         
@@ -84,6 +102,8 @@ public class DocumentoService {
         var documento = documentoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Documento não encontrado com id: " + id));
         
+        var usuarioId = documento.getUsuario() != null ? documento.getUsuario().getId() : null;
+        
         documento.setTitulo(dto.titulo());
         documento.setConteudo(dto.conteudo());
         documento.setDataAtualizacao(java.time.LocalDateTime.now());
@@ -92,6 +112,9 @@ public class DocumentoService {
         
         cacheService.delete(CACHE_KEY_ALL);
         cacheService.delete(CACHE_KEY_BY_ID + id);
+        if (usuarioId != null) {
+            cacheService.delete(CACHE_KEY_BY_USUARIO + usuarioId);
+        }
         
         var dtoResult = toDTO(updated);
         cacheService.put(CACHE_KEY_BY_ID + id, dtoResult, TTL);
@@ -101,13 +124,18 @@ public class DocumentoService {
 
     @Transactional
     public void delete(Long id) {
-        if (!documentoRepository.existsById(id)) {
-            throw new RuntimeException("Documento não encontrado com id: " + id);
-        }
+        var documento = documentoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Documento não encontrado com id: " + id));
+        
+        var usuarioId = documento.getUsuario() != null ? documento.getUsuario().getId() : null;
+        
         documentoRepository.deleteById(id);
         
         cacheService.delete(CACHE_KEY_ALL);
         cacheService.delete(CACHE_KEY_BY_ID + id);
+        if (usuarioId != null) {
+            cacheService.delete(CACHE_KEY_BY_USUARIO + usuarioId);
+        }
     }
 
     private DocumentoDTO toDTO(Documento documento) {

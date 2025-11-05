@@ -30,6 +30,11 @@ public class DocumentoController {
         return ResponseEntity.ok(documentoService.findById(id));
     }
 
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<DocumentoDTO>> findByUsuarioId(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(documentoService.findByUsuarioId(usuarioId));
+    }
+
     @PostMapping
     public ResponseEntity<DocumentoDTO> create(@RequestBody CreateDocumentoDTO dto) {
         var created = documentoService.create(dto);

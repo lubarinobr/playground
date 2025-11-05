@@ -12,13 +12,31 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - monitor_network
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=32MB"
+      - "-c"
+      - "effective_cache_size=64MB"
+      - "-c"
+      - "work_mem=4MB"
+      - "-c"
+      - "max_connections=50"
+      - "-c"
+      - "random_page_cost=4.0"
+      - "-c"
+      - "synchronous_commit=on"
+      - "-c"
+      - "checkpoint_timeout=1min"
+      - "-c"
+      - "wal_compression=off"
     deploy:
       resources:
         limits:
-          memory: 500m
+          memory: 300m
         reservations:
-          memory: 256m
-    mem_limit: 500m
+          memory: 156m
+    mem_limit: 300m
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
